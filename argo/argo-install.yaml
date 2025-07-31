@@ -22,7 +22,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/your-username/flask-app-ci'
+    repoURL: 'https://github.com/asaf9879/flask-app-ci'
     targetRevision: HEAD
     path: manifests
   destination:
