@@ -17,8 +17,8 @@ jobs:
       - name: Log in to DockerHub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.asaf9879 }}
-          password: ${{ secrets.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 }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build Docker image
         run: docker build -t asaf9879/flask-app:dev-latest ./app
