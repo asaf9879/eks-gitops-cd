@@ -1,0 +1,18 @@
+replicaCount: 1
+
+image:
+  repository: asaf9879/flask-app
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 5000
+
+env:
+  DB_HOST: mysql.myapp.svc.cluster.local
+  DB_NAME: flaskdb
+
+secret:
+  DB_USER: flask
+  DB_PASSWORD: flaskpass
