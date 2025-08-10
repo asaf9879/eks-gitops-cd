@@ -5,12 +5,12 @@ on:
     branches:
       - main
     paths:
-      - 'helm/**'       # Only trigger on changes to helm charts, for example
-      - 'k8s/**'        # or Kubernetes manifests folder
+      - 'helm/**'
+      - 'k8s/**'
       - '.github/workflows/ci-cd.yaml'
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   deploy:
@@ -22,18 +22,8 @@ jobs:
 
       - name: Configure kubectl
         run: |
-          # setup kubectl here, e.g.:
-          # echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
-          # or use setup-kubectl action
-
-      - name: Update Helm image tag
-        run: |
-          sed -i 's/tag:.*/tag: dev-latest/' helm/flask-app/values.yaml
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-          git add helm/flask-app/values.yaml
-          git commit -m "Update image tag to dev-latest"
-          git push
+          echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
 
       - name: Deploy with Helm
         run: |
