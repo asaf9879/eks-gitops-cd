@@ -1,0 +1,28 @@
+name: ArgoCD Sync
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'helm/**'
+      - 'environments/**'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # אופציונלי: Sync אוטומטי עם ArgoCD CLI (אם אין לך auto-sync)
+    # requires ARGOCD_SERVER, ARGOCD_USERNAME, ARGOCD_PASSWORD secrets
+
+    # - name: Install ArgoCD CLI
+    #   run: |
+    #     curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+    #     chmod +x /usr/local/bin/argocd
+
+    # - name: Login to ArgoCD
+    #   run: |
+    #     argocd login ${{ secrets.ARGOC

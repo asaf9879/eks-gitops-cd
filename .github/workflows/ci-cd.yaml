@@ -1,36 +1,43 @@
-name: Build and Deploy Flask App
+name: Deploy via ArgoCD
 
 on:
   push:
     branches: [main]
     paths:
-      - "app/**"
-      - ".github/workflows/ci-cd.yaml"
+      - 'helm/**'
+      - 'environments/**'
+
+permissions:
+  contents: read
 
 jobs:
-  build-and-push:
+  notify-argocd:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Log in to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      # אופציונלי: אם ArgoCD שלך לא על auto-sync – הפעל סנכרון ידני:
+      # ודא שיש לך את הסודות הבאים:
+      # ARGOCD_SERVER, ARGOCD_USERNAME, ARGOCD_PASSWORD
 
-      - name: Build Docker image
-        run: docker build -t asaf9879/flask-app:dev-latest ./app
+      # - name: Install ArgoCD CLI
+      #   run: |
+      #     curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+      #     chmod +x /usr/local/bin/argocd
 
-      - name: Push Docker image
-        run: docker push asaf9879/flask-app:dev-latest
+      # - name: Login to ArgoCD
+      #   run: |
+      #     argocd login ${{ secrets.ARGOCD_SERVER }} \
+      #       --username ${{ secrets.ARGOCD_USERNAME }} \
+      #       --password ${{ secrets.ARGOCD_PASSWORD }} \
+      #       --insecure
 
-      - name: Update Helm values.yaml image tag
-        run: |
-          sed -i 's/tag:.*/tag: dev-latest/' helm/flask-app/values.yaml
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-          git add helm/flask-app/values.yaml
-          git commit -m "Update image tag to dev-latest"
-          git push
+      # - name: Sync Application
+      #   run: |
+      #     argocd app sync flask-app
+
+      - name: Done
+        run: echo "Config changes pushed. If ArgoCD auto-sync is enabled, app will be updated."
+
