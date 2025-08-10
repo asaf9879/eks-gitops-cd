@@ -1,43 +1,40 @@
-name: Deploy via ArgoCD
+name: CD Pipeline
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
     paths:
-      - 'helm/**'
-      - 'environments/**'
+      - 'helm/**'       # Only trigger on changes to helm charts, for example
+      - 'k8s/**'        # or Kubernetes manifests folder
+      - '.github/workflows/ci-cd.yaml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  notify-argocd:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout CD repo
         uses: actions/checkout@v3
 
-      # אופציונלי: אם ArgoCD שלך לא על auto-sync – הפעל סנכרון ידני:
-      # ודא שיש לך את הסודות הבאים:
-      # ARGOCD_SERVER, ARGOCD_USERNAME, ARGOCD_PASSWORD
+      - name: Configure kubectl
+        run: |
+          # setup kubectl here, e.g.:
+          # echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
+          # or use setup-kubectl action
 
-      # - name: Install ArgoCD CLI
-      #   run: |
-      #     curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-      #     chmod +x /usr/local/bin/argocd
+      - name: Update Helm image tag
+        run: |
+          sed -i 's/tag:.*/tag: dev-latest/' helm/flask-app/values.yaml
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add helm/flask-app/values.yaml
+          git commit -m "Update image tag to dev-latest"
+          git push
 
-      # - name: Login to ArgoCD
-      #   run: |
-      #     argocd login ${{ secrets.ARGOCD_SERVER }} \
-      #       --username ${{ secrets.ARGOCD_USERNAME }} \
-      #       --password ${{ secrets.ARGOCD_PASSWORD }} \
-      #       --insecure
-
-      # - name: Sync Application
-      #   run: |
-      #     argocd app sync flask-app
-
-      - name: Done
-        run: echo "Config changes pushed. If ArgoCD auto-sync is enabled, app will be updated."
-
+      - name: Deploy with Helm
+        run: |
+          helm upgrade --install flask-app ./helm/flask-app --namespace default
