@@ -23,7 +23,7 @@ metadata:
   namespace: default
 subjects:
 - kind: User
-  name: arn:aws:iam::686255939891:user/asaf
+  name: arn:aws:iam::686255939891:user/eks
   apiGroup: rbac.authorization.k8s.io
 roleRef:
   kind: ClusterRole
