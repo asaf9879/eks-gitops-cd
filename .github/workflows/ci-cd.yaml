@@ -35,6 +35,7 @@ jobs:
 
       - name: Deploy with Helm
         run: |
-          helm upgrade --install flask-app "${{ github.workspace }}/app/helm/flask-app" --namespace default
+          run: helm upgrade --install flask-app ./app/helm/flask-app --namespace default
+          working-directory: ${{ github.workspace }}
 
 
