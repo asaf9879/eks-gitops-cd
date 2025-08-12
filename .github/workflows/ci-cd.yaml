@@ -35,4 +35,5 @@ jobs:
 
       - name: Deploy with Helm
         run: |
-          helm upgrade --install flask-app ./helm/flask-app --namespace default
+          helm upgrade --install flask-app ./charts/flask-app --namespace default
+
